@@ -1,6 +1,30 @@
+"use client";
+
 import Image from "next/image";
 
 export default function Home() {
+  const handlePurchase = async () => {
+    try {
+      // 1- Create a Stripe checkout session
+      const response = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId: "price_1RGO4Z4SBzZBp5zz3C930J75" }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server Error: ${response.status}`);
+      }
+
+      // 2- Redirect to Stripe Checkout Page
+      const { url } = await response.json();
+
+      window.location.href = url;
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
+
   return (
     <section>
       <div className="min-h-screen p-8">
@@ -29,7 +53,10 @@ export default function Home() {
                 <div className="m-4">
                   <span className="text-2xl font-bold">$29.99</span>
                 </div>
-                <button className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">
+                <button
+                  onClick={handlePurchase}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                >
                   Purchase Book
                 </button>
               </div>
